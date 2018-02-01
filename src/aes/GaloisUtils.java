@@ -20,4 +20,23 @@ public class GaloisUtils {
         else
             return 0;
     }
+
+    public static char multiply_by_x(int a, int b) {
+        int p = 0;
+
+        for (int n=0; n<8; n++) {
+
+            p = ((b & 0x01) > 0) ? p^a : p;
+
+            boolean ho = ((a & 0x80) > 0);
+
+            a = ((a<<1) & 0xFE);
+
+            if (ho)
+                a = a ^ 0x1b;
+
+            b = ((b>>1) & 0x7F);
+        }
+        return (char)p;
+    }
 }

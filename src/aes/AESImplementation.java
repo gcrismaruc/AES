@@ -18,15 +18,14 @@ public class AESImplementation {
             state[i] = message[i];
         }
 
-        int numberOfRounds = 13;
-
+        int numberOfRounds = 14;
         state = addRoundKey(state, getRoundKeyFromExpandedKey(key, 0));
 
-        for (int i = 0; i < numberOfRounds; i++) {
+        for (int round = 1; round < numberOfRounds; round++) {
             state = subBytes(state, true);
             state = shiftRows(state);
             state = mixColumns(arrayToMatrix(state));
-            state = addRoundKey(state, getRoundKeyFromExpandedKey(key, i));
+            state = addRoundKey(state, getRoundKeyFromExpandedKey(key, round));
         }
 
         state = subBytes(state, true);
@@ -43,21 +42,20 @@ public class AESImplementation {
         for (int i = 0; i < BLOCK_LENGTH; i++) {
             state[i] = message[i];
         }
-        int numberOfRounds = 13;
+        int numberOfRounds = 14;
 
         state = addRoundKey(state, getRoundKeyFromExpandedKey(key, numberOfRounds));
 
-        for (int i = numberOfRounds - 1; i >= 1 ; i--) {
+        for (int round = numberOfRounds - 1; round >= 1 ; round--) {
             state = invShiftRows(state);
             state = invSubBytes(state, false);
-            state = addRoundKey(state, getRoundKeyFromExpandedKey(key, i));
+            state = addRoundKey(state, getRoundKeyFromExpandedKey(key, round));
             state = invMixColumns(arrayToMatrix(state));
         }
 
         state = invShiftRows(state);
         state = invSubBytes(state, false);
         state = addRoundKey(state, getRoundKeyFromExpandedKey(key, 0));
-
         return state;
     }
 
@@ -67,20 +65,12 @@ public class AESImplementation {
         for (int i = 0; i < MATRIX_DIMENSION; i++) {
             for (int j = 0; j < MATRIX_DIMENSION; j++) {
                 for (int k = 0; k < MATRIX_DIMENSION; k++) {
-                    temp[i][j] ^= GaloisUtils.mul(AESUtils.invMixBoxM[i][k], matrixState[k][j]);
+                    temp[i][j] ^= GaloisUtils.multiply_by_x(AESUtils.invMixBoxM[i][k], matrixState[k][j]);
                 }
             }
         }
 
-        char[] newState = new char[BLOCK_LENGTH];
-        int k = 0;
-        for (int j = 0; j < MATRIX_DIMENSION; j++) {
-            for(int i = 0; i < MATRIX_DIMENSION; i++) {
-                newState[k++] = temp[i][j];
-            }
-        }
-
-        return newState;
+        return MatrixUtils.matrixToArray(temp);
     }
 
     private static char[] invSubBytes(char[] state, boolean encryptFlag) {
@@ -90,37 +80,24 @@ public class AESImplementation {
         return state;
     }
 
-    private static char[] invShiftRows(char[] state) {
-        char[] tmp = new char[BLOCK_LENGTH];
-//
-        tmp[0] = state[0];
-        tmp[1] = state[13];
-        tmp[2] = state[10];
-        tmp[3] = state[7];
+    public static char[] invShiftRows(char[] state) {
+        char[][] tmp = new char[MATRIX_DIMENSION][MATRIX_DIMENSION];
+        char [][] newState = MatrixUtils.arrayToMatrix(state);
 
-        tmp[4] = state[4];
-        tmp[5] = state[1];
-        tmp[6] = state[14];
-        tmp[7] = state[11];
-
-        tmp[8] = state[8];
-        tmp[9] = state[5];
-        tmp[10] = state[2];
-        tmp[11] = state[15];
-
-        tmp[12] = state[12];
-        tmp[13] = state[9];
-        tmp[14] = state[6];
-        tmp[15] = state[3];
-
-        return tmp;
+        for (int i = 0; i < MATRIX_DIMENSION; i++) {
+            tmp[0][i] = newState[0][i];
+            tmp[1][i] = newState[1][(i + 3) % MATRIX_DIMENSION];
+            tmp[2][i] = newState[2][(i + 2) % MATRIX_DIMENSION];
+            tmp[3][i] = newState[3][(i + 1) % MATRIX_DIMENSION];
+        }
+        return MatrixUtils.matrixToArray(tmp);
     }
 
     private static char[] getRoundKeyFromExpandedKey(char [] expandedKey, int round) {
-        char[] key = new char[16];
-        int index = 16 * (round + 1);
+        char[] key = new char[BLOCK_LENGTH];
+        int index = BLOCK_LENGTH * (round);
 
-        for(int i = 0; i < 16; i++) {
+        for(int i = 0; i < BLOCK_LENGTH; i++) {
             key[i] = expandedKey[index];
             index++;
         }
@@ -134,33 +111,20 @@ public class AESImplementation {
         for (int i = 0; i < MATRIX_DIMENSION; i++) {
             for (int j = 0; j < MATRIX_DIMENSION; j++) {
                 for (int k = 0; k < MATRIX_DIMENSION; k++) {
-                    temp[i][j] ^= GaloisUtils.mul(AESUtils.mixBoxM[i][k], state[k][j]);
+                    temp[i][j] ^= GaloisUtils.multiply_by_x(AESUtils.mixBoxM[i][k], state[k][j]);
                 }
             }
         }
-
-        char[] newState = new char[BLOCK_LENGTH];
-        int k = 0;
-        for (int j = 0; j < MATRIX_DIMENSION; j++) {
-            for(int i = 0; i < MATRIX_DIMENSION; i++) {
-                newState[k++] = temp[i][j];
-            }
-        }
-
-        return newState;
+        return MatrixUtils.matrixToArray(temp);
     }
 
-
-
-    private static char[] shiftRows(char[] state) {
+    public static char[] shiftRows(char[] state) {
 
         char[] tmp = new char[BLOCK_LENGTH];
         for (int i = 0; i < BLOCK_LENGTH; i++) {
             int shift = i % 4;
-
             tmp[i] = state[(shift * 4 + i) % BLOCK_LENGTH];
         }
-
         return tmp;
     }
 
