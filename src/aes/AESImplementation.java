@@ -11,7 +11,6 @@ public class AESImplementation {
     public static final int KEY_LENGTH = 32;
 
     public static char[] encrypt(char[] message, char[] key) {
-        System.out.println("\nEncrypt");
         char[] state = new char[BLOCK_LENGTH];
 
         for (int i = 0; i < BLOCK_LENGTH; i++) {
@@ -35,8 +34,6 @@ public class AESImplementation {
     }
 
     public static char[] decrypt(char[] message, char[] key) {
-        System.out.println("\nDecrypt");
-
         char[] state = new char[BLOCK_LENGTH];
 
         for (int i = 0; i < BLOCK_LENGTH; i++) {

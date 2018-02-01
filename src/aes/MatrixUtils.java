@@ -46,8 +46,7 @@ public class MatrixUtils {
             if(i % 16 == 0){
                 System.out.println("");
             }
-            System.out.print(Integer.toHexString((int)input[i]) + " ");
-//            System.out.print(input[i] + " ");
+            System.out.print(Integer.toHexString(input[i]) + " ");
         }
     }
 }
