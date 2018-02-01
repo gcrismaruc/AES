@@ -3,20 +3,25 @@ package aes;
 /**
  * Created by Gheorghe on 1/30/2018.
  */
-public class AES_Utils {
+public class AESUtils {
+
+    public static int BLOCK_LENGTH = 16;
+    public static int MATRIX_DIMENSION = 4;
 
     /* XOR constants for key expansion */
     public static final int[] rCon = {0x8D, 0x01, 0x02, 0x04, 0x08, 0x10,
             0x20, 0x40, 0x80, 0x1B, 0x36};
 
     /* Constants for Galois Field multiplication */
-    public static final byte[][] mixBoxM = {{0x02, 0x03, 0x01, 0x01},
+    public static final int[][] mixBoxM = {
+            {0x02, 0x03, 0x01, 0x01},
             {0x01, 0x02, 0x03, 0x01},
             {0x01, 0x01, 0x02, 0x03},
             {0x03, 0x01, 0x01, 0x02}};
 
     /* Constants for Galois Field multiplication */
-    public static final byte[][] invMixBoxM = {{0x0E, 0x0B, 0x0D, 0x09},
+    public static final int[][] invMixBoxM = {
+            {0x0E, 0x0B, 0x0D, 0x09},
             {0x09, 0x0E, 0x0B, 0x0D},
             {0x0D, 0x09, 0x0E, 0x0B},
             {0x0B, 0x0D, 0x09, 0x0E}};
@@ -92,7 +97,7 @@ public class AES_Utils {
                     0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D}};
 
     /* Log table for Galois Field multiplication */
-    private static final int[] LogTable = {
+    public static final int[] LogTable = {
             0, 0, 25, 1, 50, 2, 26, 198, 75, 199, 27, 104, 51, 238, 223, 3, 100, 4,
             224, 14, 52, 141, 129, 239, 76, 113, 8, 200, 248, 105, 28, 193, 125,
             194, 29, 181, 249, 185, 39, 106, 77, 228, 166, 114, 154, 201, 9, 120,
@@ -112,7 +117,7 @@ public class AES_Utils {
             99, 140, 128, 192, 247, 112, 7};
 
     /* Anti-log table for Galois Field multiplication */
-    private static final int[] AlogTable = {
+    public static final int[] AlogTable = {
             1, 3, 5, 15, 17, 51, 85, 255, 26, 46, 114, 150, 161, 248, 19, 53, 95,
             225, 56, 72, 216, 115, 149, 164, 247, 2, 6, 10, 30, 34, 102, 170, 229,
             52, 92, 228, 55, 89, 235, 38, 106, 190, 217, 112, 144, 171, 230, 49, 83,
